@@ -1,8 +1,12 @@
 using UnityEngine;
 
+/// <summary>   
+/// The game player (shooter).
+/// </summary>
 [RequireComponent(typeof(AudioSource))]
 public class Player : MonoBehaviour
 {
+    internal static readonly string NAME = "Player";
     internal static readonly string TAG = "Player";
 
     private static readonly Vector3 uBound = new Vector3(11, 6, 0);
@@ -13,37 +17,47 @@ public class Player : MonoBehaviour
     private float speed = 6.0f;
 
     [SerializeField]
-    private int lives = 9;
+    private int lives = 3;
+
+    [SerializeField]
+    private int score = 0;
+    private int kills = 0;
 
     [SerializeField]
     private bool wrapHorizontal = false;
 
     [SerializeField]
-    private GameObject laserPrefab;
+    private bool isTripleShotActive = false;
 
     [SerializeField]
+    private GameObject tripleShotPrefab = default;
+
+    [SerializeField]
+    private GameObject laserPrefab = default;
+
+    [SerializeField]
+    private GameObject leftEngineFire = default;
+
+    [SerializeField]
+    private GameObject rightEngineFire = default;
+
+    [SerializeField]
+    private AudioClip laserAudioClip = default;
+
     private AudioSource laserAudioSource;
-
-    [SerializeField]
-    private AudioClip laserAudioClip;
-
-    [SerializeField]
     private SpawnManager spawnManager;
+    private UIManager uiManager;
 
     // Start is called before the first frame update
     void Start()
     {
-        spawnManager = GameObject.Find(SpawnManager.NAME).GetComponent<SpawnManager>();
-        if (spawnManager == null)
-        {
-            Debug.LogError("Could not find " + SpawnManager.NAME);
-        }
-
-        laserAudioSource = GetComponent<AudioSource>();
-        laserAudioSource.clip = laserAudioClip;
+        this.spawnManager = GameObject.Find(SpawnManager.NAME).GetComponent<SpawnManager>();
+        this.uiManager = GameObject.Find(UIManager.NAME).GetComponent<UIManager>();
+        this.laserAudioSource = GetComponent<AudioSource>();
+        this.laserAudioSource.clip = this.laserAudioClip;
 
         print("Created player positioned at origin");
-        transform.position = Vector3.zero;
+        this.transform.position = Vector3.zero;
     }
 
     // Update is called once per frame
@@ -62,22 +76,56 @@ public class Player : MonoBehaviour
     {
         // Fire at a slight offset from the player
         var fireAt = transform.position + fireOffset;
-        print("Firing laser at " + fireAt);
-        Instantiate(laserPrefab, fireAt, Quaternion.identity);
-
+        if (isTripleShotActive)
+        {
+            print("Firing triple-shot laser at " + fireAt);
+            Instantiate(tripleShotPrefab, fireAt, Quaternion.identity);
+        }
+        else
+        {
+            print("Firing single laser at " + fireAt);
+            Instantiate(laserPrefab, fireAt, Quaternion.identity);
+        }
         // Play audio
         laserAudioSource.Play();
 
     }
 
+    internal void EnemyKill(int addition)
+    {
+        kills++;
+        score += addition;
+        uiManager.SetScore(score);
+        uiManager.SetKills(kills);
+    }
+
     internal void Damage()
     {
+        lives--;
         print("Damage, remaining lives: " + lives);
-        if (--lives == 0)
+        uiManager.SetLives(lives);
+
+        switch (lives)
         {
-            print("Game over");
-            spawnManager.Stop();
-            Destroy(this.gameObject);
+            case 0:
+                GameOver();
+                break;
+            case 1:
+                // Make both engines burn
+                leftEngineFire.SetActive(true);
+                rightEngineFire.SetActive(true);
+                break;
+            case 2:
+                // Make one engine burn
+                float r = Random.Range(0f, 1f);
+                if (r < 0.5)
+                    leftEngineFire.SetActive(true);
+                else
+                    rightEngineFire.SetActive(true);
+                break;
+            default:
+                // Nothing
+                break;
         }
     }
 
@@ -90,6 +138,14 @@ public class Player : MonoBehaviour
         transform.Translate(translation);
         transform.position = Clamp(transform.position);
         //print("Moving player to " + boundedTranslation);
+    }
+
+    private void GameOver()
+    {
+        print("Game over");
+        uiManager.OnGameOver();
+        spawnManager.OnGameOver();
+        Destroy(this.gameObject, 1f);
     }
 
     private Vector3 Clamp(Vector3 v) {

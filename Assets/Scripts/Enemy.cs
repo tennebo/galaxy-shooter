@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// An enemy object.
+/// </summary>
 [RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(Animator))]
 public class Enemy : MonoBehaviour
@@ -7,28 +10,39 @@ public class Enemy : MonoBehaviour
     internal static readonly string TAG = "Enemy";
     internal static readonly string DEATH_TRIGGER = "OnEnemyDeath";
 
+    // Points per enemy kill
+    private static readonly int killScore = 11;
+
+    // Enemy speed while exploding
+    private static readonly float speedAfterKill = 1.0f;
+
+    // Time it takes enemy to explode
+    private static readonly float deathTimespan = 2.8f;
+
     private static readonly float topY = 8f;
     private static readonly float bottomY = -8f;
     private static readonly float minX = -11f;
     private static readonly float maxX = 11f;
 
+    // Vertical drop speed
     [SerializeField]
     private float speed = 3.0f;
 
-    [SerializeField]
     private AudioSource explosionAudioSource;
-
-    [SerializeField]
     private Animator explosionAnimator;
+    private Player player;
 
     // Start is called before the first frame update
     void Start()
     {
-        explosionAudioSource = GetComponent<AudioSource>();
-        print("Created enemy with audio source " + explosionAudioSource.clip.name);
+        this.explosionAudioSource = GetComponent<AudioSource>();
+        print("Created enemy with audio source " + this.explosionAudioSource.clip.name);
 
-        explosionAnimator= GetComponent<Animator>();
-        print("Created enemy with animator " + explosionAnimator.name);
+        this.explosionAnimator = GetComponent<Animator>();
+        print("Created enemy with animator " + this.explosionAnimator.name);
+
+        // Get a reference to the player
+        this.player = GameObject.Find(Player.NAME).GetComponent<Player>();
     }
 
     // Update is called once per frame
@@ -37,6 +51,15 @@ public class Enemy : MonoBehaviour
         Move();
     }
 
+    /// <summary>
+    /// A random position at the top of the screen.
+    /// </summary>
+    internal static Vector3 InitialPos()
+    {
+        return new Vector3(Random.Range(minX, maxX), topY, 0);
+    }
+
+    // Enemy has collided with some other object
     private void OnTriggerEnter2D(Collider2D other)
     {
         print("Enemy collided with " + other.name);
@@ -45,30 +68,29 @@ public class Enemy : MonoBehaviour
         {
             print("Enemy hit by laser");
             Destroy(other.gameObject);
-            BlowUpSelf();
+            player.EnemyKill(killScore);
         }
-
         if (other.CompareTag(Player.TAG))
         {
-            Player player = other.transform.GetComponent<Player>();
-            if (player != null)
-            {
-                print("Collided with enemy");
-                player.Damage();
-            }
-            BlowUpSelf();
+            print("Player collided with enemy");
+            player.Damage();
         }
+        BlowUpSelf();
     }
 
+    // Destroy this enemy
     private void BlowUpSelf()
     {
         print("Destroying enemy");
-        speed = 0; // Stop the movement
+        speed = speedAfterKill; // Stop (or slow down) the movement
         explosionAnimator.SetTrigger(DEATH_TRIGGER); // Start explosion animation
         explosionAudioSource.Play();
-        Destroy(this.gameObject, 2.8f);
+
+        Destroy(GetComponent<Collider2D>()); // Disable further hits while we die
+        Destroy(this.gameObject, deathTimespan);
     }
 
+    // Move this enemy
     private void Move()
     {
         Vector3 translation = Vector3.down * speed * Time.deltaTime;
@@ -79,10 +101,5 @@ public class Enemy : MonoBehaviour
         {
             transform.position = InitialPos();
         }
-    }
-
-    internal static Vector3 InitialPos()
-    {
-        return new Vector3(Random.Range(minX, maxX), topY, 0);
     }
 }

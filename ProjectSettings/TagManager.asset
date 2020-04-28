@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Laser
   - Enemy
+  - FireLeft
+  - FireRight
   layers:
   - Default
   - TransparentFX
@@ -15,7 +17,7 @@ TagManager:
   - UI
   - 
   - 
-  - 
+  - Post Processing
   - 
   - 
   - 

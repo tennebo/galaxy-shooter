@@ -1,16 +1,20 @@
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// Spawn new enemies.
+/// </summary>
 public class SpawnManager : MonoBehaviour
 {
     internal static readonly string NAME = "Spawn_Manager";
 
     [SerializeField]
-    private GameObject enemyPrefab;
+    private GameObject enemyPrefab = default;
 
     [SerializeField]
-    private GameObject enemyContainer;
+    private GameObject enemyContainer = default;
 
+    // Create a new enemy every few seconds
     [SerializeField]
     private int intervalSeconds = 5;
 
@@ -22,16 +26,13 @@ public class SpawnManager : MonoBehaviour
         StartCoroutine(SpawnEnemies());
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
-    internal void Stop()
+    // Signal a stop to the enemy creation stream
+    internal void OnGameOver()
     {
         stop = true;
     }
 
+    // Infinite stream of new enemies, with a delay between each one
     private IEnumerator SpawnEnemies()
     {
         while (!stop)
