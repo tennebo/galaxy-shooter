@@ -20,6 +20,10 @@ Learn FPS mode for navigating the scene view.
 
 Create and save custom layout.
 
+### Input System
+
+Learn how to use Unity's new input system package.
+
 ## Source Control
 
 ### Install Git LFS
