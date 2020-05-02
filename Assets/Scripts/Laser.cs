@@ -8,7 +8,9 @@ public class Laser : MonoBehaviour
     internal static readonly string TAG = "Laser";
 
     // Vertical speed of the beam
+    [Min(0)]
     [SerializeField]
+    [Tooltip("Laser beam speed")]
     float speed = 10.0f;
 
     void Update()

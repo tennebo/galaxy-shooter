@@ -20,7 +20,9 @@ class Enemy : MonoBehaviour
     static readonly float deathTimespan = 2.8f;
 
     // Vertical drop speed
+    [Min(0)]
     [SerializeField]
+    [Tooltip("Vertical enemy drop speed")]
     float speed = 3.0f;
 
     AudioSource explosionAudioSource;

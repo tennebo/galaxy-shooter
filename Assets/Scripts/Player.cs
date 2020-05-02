@@ -17,10 +17,14 @@ public class Player : MonoBehaviour
     // Laser originates this far from self
     static readonly Vector3 fireOffset = new Vector3(0, 1f, 0);
 
+    [Min(0)]
     [SerializeField]
+    [Tooltip("Max player speed")]
     float speed = 9.0f;
 
+    [Range(1, 3)]
     [SerializeField]
+    [Tooltip("Number of lives")]
     int lives = 3;
 
     [SerializeField]
@@ -30,9 +34,11 @@ public class Player : MonoBehaviour
     int kills = 0;
 
     [SerializeField]
+    [Tooltip("Wrap around when leaving the visible screen")]
     bool wrapHorizontal = false;
 
     [SerializeField]
+    [Tooltip("Are we firing single or triple laser shots?")]
     bool isTripleShotActive = false;
 
     [SerializeField]

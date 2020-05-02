@@ -15,7 +15,9 @@ public class SpawnManager : MonoBehaviour
     GameObject enemyContainer = default;
 
     // Create a new enemy every few seconds
+    [Min(1)]
     [SerializeField]
+    [Tooltip("How many seconds between creating each new enemy")]
     int intervalSeconds = 5;
 
     bool gameOver = false;
