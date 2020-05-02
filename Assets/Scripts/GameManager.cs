@@ -1,36 +1,43 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Handle   non-gameplay user inputs such as quitting and restarting.
+/// Handle non-gameplay user inputs such as quitting and restarting.
+///
+/// Key P: Pause by freezing time and displaying the pause menu panel
+/// Key R: Resume by un-freezing time and hiding the pause menu panel
+/// Key S: Slow down time
 /// </summary>
 public class GameManager : MonoBehaviour
 {
     internal static readonly string NAME = "Game_Manager";
 
-    private static readonly string gameScene = "Game";
-    private static readonly string mainMenuScene = "Main_Menu";
+    static readonly string gameScene = "Game";
+    static readonly string mainMenuScene = "Main_Menu";
 
     [SerializeField]
-    private GameObject pauseMenuPanel = default;
+    GameObject pauseMenuPanel = default;
 
-    private bool gameOver;
+    // Slow motion mode
+    [SerializeField]
+    bool slowMo;
 
+    // True if we are in a 'game over' state
+    bool gameOver;
 
     bool IsPaused { get { return pauseMenuPanel.activeSelf; } }
 
-    // Start is called before the first frame update
     void Start()
     {
         pauseMenuPanel.SetActive(false);
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (gameOver)
         {
-            if (Input.GetKeyDown(KeyCode.R))
+            if (Keyboard.current[Key.R].wasPressedThisFrame)
             {
                 SceneManager.LoadScene(gameScene);
             }
@@ -38,44 +45,55 @@ public class GameManager : MonoBehaviour
         else
         {
             // In normal play mode
-            if (Input.GetKeyDown(KeyCode.P))
+            if (Keyboard.current[Key.P].wasPressedThisFrame)
             {
                 PausePlay();
             }
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Keyboard.current[Key.Escape].wasPressedThisFrame)
             {
                 LoadMainMenu();
+            }
+            if (Keyboard.current[Key.Z].wasPressedThisFrame)
+            {
+                FlipSlowMo();
             }
         }
         if (IsPaused)
         {
             // In paused mode
-            if (Input.GetKeyDown(KeyCode.R))
+            if (Keyboard.current[Key.R].wasPressedThisFrame)
             {
                 ResumePlay();
             }
-            if (Input.GetKeyDown(KeyCode.M))
+            if (Keyboard.current[Key.M].wasPressedThisFrame)
             {
                 LoadMainMenu();
             }
         }
     }
 
-    internal void PausePlay()
+    void FlipSlowMo()
+    {
+        slowMo = !slowMo;
+        Time.timeScale = slowMo ? 0.1f : 1;
+        Debug.Log("Time scale is <b>" + Time.timeScale + "</b>");
+    }
+
+    void PausePlay()
     {
         Debug.Log("Pausing");
         Time.timeScale = 0;
         pauseMenuPanel.SetActive(true);
     }
 
-    public void ResumePlay()
+    void ResumePlay()
     {
         Debug.Log("Resuming");
         pauseMenuPanel.SetActive(false);
         Time.timeScale = 1;
     }
 
-    public void LoadMainMenu()
+    internal void LoadMainMenu()
     {
         Debug.Log("Loading the main menu scene");
         SceneManager.LoadScene(mainMenuScene);

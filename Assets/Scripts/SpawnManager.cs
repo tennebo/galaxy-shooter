@@ -9,18 +9,17 @@ public class SpawnManager : MonoBehaviour
     internal static readonly string NAME = "Spawn_Manager";
 
     [SerializeField]
-    private GameObject enemyPrefab = default;
+    GameObject enemyPrefab = default;
 
     [SerializeField]
-    private GameObject enemyContainer = default;
+    GameObject enemyContainer = default;
 
     // Create a new enemy every few seconds
     [SerializeField]
-    private int intervalSeconds = 5;
+    int intervalSeconds = 5;
 
-    private bool stop = false;
+    bool gameOver = false;
 
-    // Start is called before the first frame update
     void Start()
     {
         StartCoroutine(SpawnEnemies());
@@ -29,15 +28,15 @@ public class SpawnManager : MonoBehaviour
     // Signal a stop to the enemy creation stream
     internal void OnGameOver()
     {
-        stop = true;
+        gameOver = true;
     }
 
     // Infinite stream of new enemies, with a delay between each one
-    private IEnumerator SpawnEnemies()
+    IEnumerator SpawnEnemies()
     {
-        while (!stop)
+        while (!gameOver)
         {
-            print("Creating new enemy from prefab");
+            //Debug.Log("Creating new enemy from prefab <i>" + enemyPrefab.name + "</i>");
             var enemy = Instantiate(enemyPrefab, Enemy.InitialPos(), Quaternion.identity);
             enemy.transform.parent = enemyContainer.transform;
             yield return new WaitForSeconds(intervalSeconds);

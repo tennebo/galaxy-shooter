@@ -6,9 +6,9 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class MainMenu : MonoBehaviour
 {
-    private static readonly string gameScene = "Game";
+    static readonly string gameScene = "Game";
 
-    public void LoadGame()
+    internal void LoadGame()
     {
         Debug.Log("Loading new game");
         SceneManager.LoadScene(gameScene);

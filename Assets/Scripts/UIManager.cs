@@ -7,34 +7,39 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     internal static readonly string NAME = "UI_Manager";
-    private static readonly string scorePrefix = "Score: ";
-    private static readonly string killPrefix = "Kills: ";
-    private static readonly int initialScore = -5;
 
-    private GameManager gameManager;
+    static readonly string scorePrefix = "Score: ";
+    static readonly string killPrefix = "Kills: ";
+    static readonly int initialScore = -5;
 
-    [SerializeField]
-    private Text scoreText = default;
+    GameManager gameManager;
 
     [SerializeField]
-    private Text killText = default;
+    Text scoreText = default;
 
     [SerializeField]
-    private Text gameOverText = default;
+    Text killText = default;
 
     [SerializeField]
-    private Text restartText = default;
+    Text gameOverText = default;
 
     [SerializeField]
-    private Sprite[] livesSprites = default;
+    Text restartText = default;
 
     [SerializeField]
-    private Image livesImage = default;
+    Sprite[] livesSprites = default;
 
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField]
+    Image livesImage = default;
+
+
+    void Awake()
     {
         gameManager = GameObject.Find(GameManager.NAME).GetComponent<GameManager>();
+    }
+
+    void Start()
+    {
         gameOverText.gameObject.SetActive(false);
         restartText.gameObject.SetActive(false);
 
@@ -42,21 +47,11 @@ public class UIManager : MonoBehaviour
         SetKills(0);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
     internal void OnGameOver()
     {
         gameOverText.gameObject.SetActive(true);
         restartText.gameObject.SetActive(true);
         gameManager.OnGameOver();
-    }
-
-    internal void ResumePlay()
-    {
-        gameManager.ResumePlay();
     }
 
     internal void SetLives(int lives)

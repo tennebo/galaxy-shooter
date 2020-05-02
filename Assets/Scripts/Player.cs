@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>   
 /// The game player (shooter).
@@ -9,100 +10,108 @@ public class Player : MonoBehaviour
     internal static readonly string NAME = "Player";
     internal static readonly string TAG = "Player";
 
-    private static readonly Vector3 uBound = new Vector3(11, 6, 0);
-    private static readonly Vector3 lBound = new Vector3(-11, -6, 0);
-    private static readonly Vector3 fireOffset = new Vector3(0, 1f, 0);
+    // Upper and lower screen boundaries
+    static readonly Vector3 uBound = new Vector3(Constants.maxX, Constants.topY, 0);
+    static readonly Vector3 lBound = new Vector3(Constants.minX, Constants.bottomY, 0);
+
+    // Laser originates this far from self
+    static readonly Vector3 fireOffset = new Vector3(0, 1f, 0);
 
     [SerializeField]
-    private float speed = 6.0f;
+    float speed = 9.0f;
 
     [SerializeField]
-    private int lives = 3;
+    int lives = 3;
 
     [SerializeField]
-    private int score = 0;
-    private int kills = 0;
+    int score = 0;
+
+    // Accumulated count of enemy kills
+    int kills = 0;
 
     [SerializeField]
-    private bool wrapHorizontal = false;
+    bool wrapHorizontal = false;
 
     [SerializeField]
-    private bool isTripleShotActive = false;
+    bool isTripleShotActive = false;
 
     [SerializeField]
-    private GameObject tripleShotPrefab = default;
+    GameObject tripleShotPrefab = default;
 
     [SerializeField]
-    private GameObject laserPrefab = default;
+    GameObject laserPrefab = default;
 
     [SerializeField]
-    private GameObject leftEngineFire = default;
+    GameObject leftEngineFire = default;
 
     [SerializeField]
-    private GameObject rightEngineFire = default;
+    GameObject rightEngineFire = default;
 
     [SerializeField]
-    private AudioClip laserAudioClip = default;
+    AudioClip laserAudioClip = default;
 
-    private AudioSource laserAudioSource;
-    private SpawnManager spawnManager;
-    private UIManager uiManager;
+    AudioSource laserAudioSource;
+    SpawnManager spawnManager;
+    UIManager uiManager;
+    PlayerInputActions playerActions;
 
-    // Start is called before the first frame update
-    void Start()
+    float horizontalInput;
+    float verticalInput;
+
+    void Awake()
     {
+        this.playerActions = new PlayerInputActions();
         this.spawnManager = GameObject.Find(SpawnManager.NAME).GetComponent<SpawnManager>();
         this.uiManager = GameObject.Find(UIManager.NAME).GetComponent<UIManager>();
         this.laserAudioSource = GetComponent<AudioSource>();
         this.laserAudioSource.clip = this.laserAudioClip;
+    }
 
-        print("Created player positioned at origin");
+    void OnEnable()
+    {
+        playerActions.Enable();
+    }
+
+    void OnDisable()
+    {
+        playerActions.Disable();
+    }
+
+    void Start()
+    {
+        Debug.Log("Created player positioned at origin");
         this.transform.position = Vector3.zero;
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Move first, then fire
+        // Move first
         Move();
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        // ...then fire
+        if (Keyboard.current[Key.Space].wasPressedThisFrame)
         {
             Fire();
         }
+        if (Keyboard.current[Key.T].wasPressedThisFrame)
+        {
+            isTripleShotActive = !isTripleShotActive;
+        }
     }
 
-    private void Fire()
-    {
-        // Fire at a slight offset from the player
-        var fireAt = transform.position + fireOffset;
-        if (isTripleShotActive)
-        {
-            print("Firing triple-shot laser at " + fireAt);
-            Instantiate(tripleShotPrefab, fireAt, Quaternion.identity);
-        }
-        else
-        {
-            print("Firing single laser at " + fireAt);
-            Instantiate(laserPrefab, fireAt, Quaternion.identity);
-        }
-        // Play audio
-        laserAudioSource.Play();
-
-    }
-
-    internal void EnemyKill(int addition)
+    internal void OnEnemyKill(int scoreIncrement)
     {
         kills++;
-        score += addition;
+        score += scoreIncrement;
         uiManager.SetScore(score);
         uiManager.SetKills(kills);
     }
 
-    internal void Damage()
+    internal void InflictDamage()
     {
         lives--;
-        print("Damage, remaining lives: " + lives);
+        Debug.Log("Damage, remaining lives: <color=green>" + lives + "</color>");
         uiManager.SetLives(lives);
 
         switch (lives)
@@ -129,26 +138,58 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void Move()
+    // Called if the Unity input behavior is 'SendMessages'
+    public void OnFire(InputValue value)
     {
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
+        Debug.Log("Fire with input <color=red>" + value.GetType() + "</color>");
+        Fire();
+    }
+
+    // Called if the Unity input behavior is 'SendMessages'
+    public void OnMove(InputValue value)
+    {
+        // Capture the input for use by the Update function later
+        var input = value.Get<Vector2>();
+        horizontalInput = input.x;
+        verticalInput = input.y;
+    }
+
+    void Move()
+    {
         Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
         Vector3 translation = direction * speed * Time.deltaTime;
         transform.Translate(translation);
         transform.position = Clamp(transform.position);
-        //print("Moving player to " + boundedTranslation);
     }
 
-    private void GameOver()
+    void GameOver()
     {
-        print("Game over");
+        Debug.Log("Game over");
         uiManager.OnGameOver();
         spawnManager.OnGameOver();
         Destroy(this.gameObject, 1f);
     }
 
-    private Vector3 Clamp(Vector3 v) {
+    void Fire()
+    {
+        // Fire at a slight offset from the player
+        var fireAt = transform.position + fireOffset;
+        if (isTripleShotActive)
+        {
+            Debug.Log("Firing triple-shot laser at " + fireAt);
+            Instantiate(tripleShotPrefab, fireAt, Quaternion.identity);
+        }
+        else
+        {
+            Debug.Log("Firing single laser at " + fireAt);
+            Instantiate(laserPrefab, fireAt, Quaternion.identity);
+        }
+        // Play audio
+        laserAudioSource.Play();
+
+    }
+
+    Vector3 Clamp(Vector3 v) {
         float x = wrapHorizontal ?
             WrapX(v.x) : Mathf.Clamp(v.x, lBound.x, uBound.x);
         return new Vector3(
@@ -157,7 +198,7 @@ public class Player : MonoBehaviour
             Mathf.Clamp(v.z, lBound.z, uBound.z));
     }
 
-    private float WrapX(float x) {
+    static float WrapX(float x) {
         if (x < lBound.x)
             return uBound.x;
         if (uBound.x < x)
