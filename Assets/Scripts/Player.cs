@@ -147,7 +147,6 @@ public class Player : MonoBehaviour
     // Called if the Unity input behavior is 'SendMessages'
     public void OnFire(InputValue value)
     {
-        Debug.Log("Fire with input <color=red>" + value.GetType() + "</color>");
         Fire();
     }
 
