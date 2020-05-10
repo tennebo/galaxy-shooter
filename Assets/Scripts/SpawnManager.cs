@@ -35,13 +35,13 @@ public class SpawnManager : MonoBehaviour
 
     [Min(1)]
     [SerializeField]
-    [Tooltip("How many seconds between creating a triple-shot power-up")]
-    int shieldPowerupSeconds = 150;
+    [Tooltip("How many seconds between creating a shield power-up")]
+    int shieldPowerupSeconds = 100;
 
     [Min(1)]
     [SerializeField]
-    [Tooltip("How many seconds between creating a triple-shot power-up")]
-    int speedPowerupSeconds = 20;
+    [Tooltip("How many seconds between creating a speed boost power-up")]
+    int speedPowerupSeconds = 30;
 
     bool gameOver = false;
 
@@ -86,8 +86,8 @@ public class SpawnManager : MonoBehaviour
     {
         while (!gameOver)
         {
-            Instantiate(shieldPrefab, Powerup.InitialPos(), Quaternion.identity);
             yield return new WaitForSeconds(WaitForRandom(shieldPowerupSeconds));
+            Instantiate(shieldPrefab, Powerup.InitialPos(), Quaternion.identity);
         }
     }
 
@@ -96,8 +96,8 @@ public class SpawnManager : MonoBehaviour
     {
         while (!gameOver)
         {
-            Instantiate(speedPrefab, Powerup.InitialPos(), Quaternion.identity);
             yield return new WaitForSeconds(WaitForRandom(speedPowerupSeconds));
+            Instantiate(speedPrefab, Powerup.InitialPos(), Quaternion.identity);
         }
     }
 

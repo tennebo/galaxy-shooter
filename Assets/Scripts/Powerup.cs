@@ -50,6 +50,10 @@ public class Powerup : MonoBehaviour
             {
                 player.ActivateTripleShot();
             }
+            if (this.CompareTag(SHIELD_TAG))
+            {
+                player.ActivateShield();
+            }
             if (this.CompareTag(SPEED_TAG))
             {
                 player.ActivateSpeedBoost();

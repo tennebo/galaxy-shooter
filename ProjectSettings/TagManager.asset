@@ -9,6 +9,8 @@ TagManager:
   - FireLeft
   - FireRight
   - TripleShot
+  - Speed
+  - Shield
   layers:
   - Default
   - TransparentFX

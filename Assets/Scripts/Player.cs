@@ -43,6 +43,10 @@ public class Player : MonoBehaviour
     bool isTripleShotActive = false;
 
     [SerializeField]
+    [Tooltip("Is the shield enabled?")]
+    bool isShieldActive = false;
+
+    [SerializeField]
     [Tooltip("Is turbo enabled?")]
     bool isSpeedBoostActive = false;
 
@@ -121,6 +125,9 @@ public class Player : MonoBehaviour
 
     internal void InflictDamage()
     {
+        if (isShieldActive)
+            return; // We are invincible
+
         lives--;
         Debug.Log("Damage, remaining lives: <color=green>" + lives + "</color>");
         uiManager.SetLives(lives);
@@ -153,6 +160,12 @@ public class Player : MonoBehaviour
     {
         isTripleShotActive = true;
         StartCoroutine(DisableTripleShot());
+    }
+
+    internal void ActivateShield()
+    {
+        isShieldActive = true;
+        StartCoroutine(ResetShield());
     }
 
     internal void ActivateSpeedBoost()
@@ -220,6 +233,12 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(5);
         isTripleShotActive = false;
+    }
+
+    IEnumerator<WaitForSeconds> ResetShield()
+    {
+        yield return new WaitForSeconds(7);
+        isShieldActive = false;
     }
 
     IEnumerator<WaitForSeconds> ResetSpeed()
