@@ -595,7 +595,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &541777162
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1236,7 +1236,7 @@ MonoBehaviour:
     type: 3}
   intervalSeconds: 5
   tripleShotPowerupSeconds: 50
-  shieldPowerupSeconds: 5
+  shieldPowerupSeconds: 100
   speedPowerupSeconds: 20
 --- !u!4 &1022188610
 Transform:

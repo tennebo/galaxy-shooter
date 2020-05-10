@@ -26,7 +26,7 @@ public class SpawnManager : MonoBehaviour
     [Min(1)]
     [SerializeField]
     [Tooltip("How many seconds between creating each new enemy")]
-    int intervalSeconds = 5;
+    int enemyIntervalSeconds = 5;
 
     [Min(1)]
     [SerializeField]
@@ -67,7 +67,7 @@ public class SpawnManager : MonoBehaviour
             //Debug.Log("Creating new enemy from prefab <i>" + enemyPrefab.name + "</i>");
             var enemy = Instantiate(enemyPrefab, Enemy.InitialPos(), Quaternion.identity);
             enemy.transform.parent = enemyContainer.transform;
-            yield return new WaitForSeconds(intervalSeconds);
+            yield return new WaitForSeconds(enemyIntervalSeconds);
         }
     }
 
