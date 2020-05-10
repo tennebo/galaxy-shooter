@@ -44,6 +44,9 @@ class Enemy : MonoBehaviour
         this.player = GameObject.Find(Player.NAME).GetComponent<Player>();
         this.explosionAudioSource = GetComponent<AudioSource>();
         this.explosionAnimator = GetComponent<Animator>();
+
+        // Introduce some jitter to the speed
+        speed += Random.Range(-1f, 1f);
     }
 
     void Start()
