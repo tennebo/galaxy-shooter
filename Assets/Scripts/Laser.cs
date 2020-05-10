@@ -19,7 +19,16 @@ public class Laser : MonoBehaviour
 
         // Destroy it if it has left the visible screen
         if (Constants.topY < transform.position.y)
-            Destroy(this.gameObject);
+        {
+            if (transform.parent != null)
+            {
+                Destroy(transform.parent.gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
     }
 
     void Move()

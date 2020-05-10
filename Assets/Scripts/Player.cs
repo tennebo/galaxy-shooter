@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -40,6 +41,10 @@ public class Player : MonoBehaviour
     [SerializeField]
     [Tooltip("Are we firing single or triple laser shots?")]
     bool isTripleShotActive = false;
+
+    [SerializeField]
+    [Tooltip("Is turbo enabled?")]
+    bool isSpeedBoostActive = false;
 
     [SerializeField]
     GameObject tripleShotPrefab = default;
@@ -144,6 +149,23 @@ public class Player : MonoBehaviour
         }
     }
 
+    internal void ActivateTripleShot()
+    {
+        isTripleShotActive = true;
+        StartCoroutine(DisableTripleShot());
+    }
+
+    internal void ActivateSpeedBoost()
+    {
+        isSpeedBoostActive = true;
+        StartCoroutine(ResetSpeed());
+    }
+
+    private float Speed()
+    {
+        return isSpeedBoostActive ? 1.5f * speed : speed;
+    }
+
     // Called if the Unity input behavior is 'SendMessages'
     public void OnFire(InputValue value)
     {
@@ -162,7 +184,7 @@ public class Player : MonoBehaviour
     void Move()
     {
         Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
-        Vector3 translation = direction * speed * Time.deltaTime;
+        Vector3 translation = direction * Speed() * Time.deltaTime;
         transform.Translate(translation);
         transform.position = Clamp(transform.position);
     }
@@ -192,6 +214,18 @@ public class Player : MonoBehaviour
         // Play audio
         laserAudioSource.Play();
 
+    }
+
+    IEnumerator<WaitForSeconds> DisableTripleShot()
+    {
+        yield return new WaitForSeconds(5);
+        isTripleShotActive = false;
+    }
+
+    IEnumerator<WaitForSeconds> ResetSpeed()
+    {
+        yield return new WaitForSeconds(5);
+        isSpeedBoostActive = false;
     }
 
     Vector3 Clamp(Vector3 v) {
