@@ -25,6 +25,15 @@ class Enemy : MonoBehaviour
     [Tooltip("Vertical enemy drop speed")]
     float speed = 3.0f;
 
+    [SerializeField]
+    AudioClip explosionClip = default;
+
+    [SerializeField]
+    AudioClip ohNoClip = default;
+
+    [SerializeField]
+    AudioClip screamClip = default;
+
     AudioSource explosionAudioSource;
     Animator explosionAnimator;
     Player player;
@@ -80,6 +89,8 @@ class Enemy : MonoBehaviour
         Debug.Log("Destroying enemy");
         speed = speedAfterKill; // Stop (or slow down) the movement
         explosionAnimator.SetTrigger(DEATH_TRIGGER); // Start explosion animation
+
+        explosionAudioSource.clip = RandomClip();
         explosionAudioSource.Play();
 
         Destroy(GetComponent<Collider2D>()); // Disable further hits while we die
@@ -97,5 +108,13 @@ class Enemy : MonoBehaviour
         {
             transform.position = InitialPos();
         }
+    }
+
+    // Pick an audio clip to play
+    AudioClip RandomClip()
+    {
+        var clips = new AudioClip[] { explosionClip, ohNoClip, screamClip };
+        int ix = Random.Range(0, clips.Length);
+        return clips[ix];
     }
 }

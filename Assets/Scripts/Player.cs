@@ -68,6 +68,9 @@ public class Player : MonoBehaviour
     [SerializeField]
     AudioClip laserAudioClip = default;
 
+    [SerializeField]
+    AudioClip powerupAudioClip = default;
+
     AudioSource laserAudioSource;
     SpawnManager spawnManager;
     UIManager uiManager;
@@ -82,7 +85,6 @@ public class Player : MonoBehaviour
         this.spawnManager = GameObject.Find(SpawnManager.NAME).GetComponent<SpawnManager>();
         this.uiManager = GameObject.Find(UIManager.NAME).GetComponent<UIManager>();
         this.laserAudioSource = GetComponent<AudioSource>();
-        this.laserAudioSource.clip = this.laserAudioClip;
     }
 
     void OnEnable()
@@ -163,6 +165,7 @@ public class Player : MonoBehaviour
     internal void ActivateTripleShot()
     {
         isTripleShotActive = true;
+        PlayPowerupSound();
         StartCoroutine(DisableTripleShot());
     }
 
@@ -170,13 +173,21 @@ public class Player : MonoBehaviour
     {
         isShieldActive = true;
         shield.SetActive(true);
+        PlayPowerupSound();
         StartCoroutine(ResetShield());
     }
 
     internal void ActivateSpeedBoost()
     {
         isSpeedBoostActive = true;
+        PlayPowerupSound();
         StartCoroutine(ResetSpeed());
+    }
+
+    void PlayPowerupSound()
+    {
+        laserAudioSource.clip = powerupAudioClip;
+        laserAudioSource.Play();
     }
 
     private float Speed()
@@ -229,9 +240,9 @@ public class Player : MonoBehaviour
             Debug.Log("Firing single laser at " + fireAt);
             Instantiate(laserPrefab, fireAt, Quaternion.identity);
         }
-        // Play audio
+        // Play laser shot audio
+        laserAudioSource.clip = laserAudioClip;
         laserAudioSource.Play();
-
     }
 
     IEnumerator<WaitForSeconds> DisableTripleShot()

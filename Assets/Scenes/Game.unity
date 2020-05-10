@@ -1234,7 +1234,7 @@ MonoBehaviour:
     type: 3}
   speedPrefab: {fileID: 5808060112136410117, guid: 51d4fce54c7c042b0bdad234f67580f6,
     type: 3}
-  intervalSeconds: 5
+  enemyIntervalSeconds: 5
   tripleShotPowerupSeconds: 50
   shieldPowerupSeconds: 100
   speedPowerupSeconds: 20
@@ -1682,6 +1682,7 @@ MonoBehaviour:
   leftEngineFire: {fileID: 1955887560}
   rightEngineFire: {fileID: 469144144}
   laserAudioClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
+  powerupAudioClip: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}
 --- !u!212 &1552815923
 SpriteRenderer:
   m_ObjectHideFlags: 0

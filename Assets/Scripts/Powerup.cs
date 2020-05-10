@@ -67,7 +67,7 @@ public class Powerup : MonoBehaviour
     {
         Debug.Log("Destroying power-up");
         Destroy(GetComponent<Collider2D>());
-        Destroy(this.gameObject, 0.2f);
+        Destroy(this.gameObject, 0.3f);
     }
 
     /// <summary>

@@ -49,7 +49,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 6
-  explosionAudioSource: {fileID: 0}
+  explosionClip: {fileID: 8300000, guid: a885c043fab7e46438bba03ba9dab6bc, type: 3}
+  ohNoClip: {fileID: 8300000, guid: deefb6f177d2e4d5fb5d5c2985b97870, type: 3}
+  screamClip: {fileID: 8300000, guid: b5dc0f8ad710e4ce5b5f313f260647be, type: 3}
 --- !u!212 &5110232593535095889
 SpriteRenderer:
   m_ObjectHideFlags: 0
