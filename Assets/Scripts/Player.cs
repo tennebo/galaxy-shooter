@@ -51,6 +51,9 @@ public class Player : MonoBehaviour
     bool isSpeedBoostActive = false;
 
     [SerializeField]
+    GameObject shield = default;
+
+    [SerializeField]
     GameObject tripleShotPrefab = default;
 
     [SerializeField]
@@ -96,6 +99,7 @@ public class Player : MonoBehaviour
     {
         Debug.Log("Created player positioned at origin");
         this.transform.position = Vector3.zero;
+        shield.SetActive(false);
     }
 
     // Update is called once per frame
@@ -165,6 +169,7 @@ public class Player : MonoBehaviour
     internal void ActivateShield()
     {
         isShieldActive = true;
+        shield.SetActive(true);
         StartCoroutine(ResetShield());
     }
 
@@ -238,6 +243,7 @@ public class Player : MonoBehaviour
     IEnumerator<WaitForSeconds> ResetShield()
     {
         yield return new WaitForSeconds(7);
+        shield.SetActive(false);
         isShieldActive = false;
     }
 
